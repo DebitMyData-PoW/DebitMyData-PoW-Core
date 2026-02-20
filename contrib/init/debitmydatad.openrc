@@ -1,0 +1,93 @@
+#!/sbin/openrc-run
+
+# backward compatibility for existing gentoo layout 
+#
+if [ -d "/var/lib/debitmydata/.debitmydata" ]; then
+	DEBITMYDATAD_DEFAULT_DATADIR="/var/lib/debitmydata/.debitmydata"
+else
+	DEBITMYDATAD_DEFAULT_DATADIR="/var/lib/debitmydatad"
+fi
+
+DEBITMYDATAD_CONFIGFILE=${DEBITMYDATAD_CONFIGFILE:-/etc/debitmydata/debitmydata.conf}
+DEBITMYDATAD_PIDDIR=${DEBITMYDATAD_PIDDIR:-/var/run/debitmydatad}
+DEBITMYDATAD_PIDFILE=${DEBITMYDATAD_PIDFILE:-${DEBITMYDATAD_PIDDIR}/debitmydatad.pid}
+DEBITMYDATAD_DATADIR=${DEBITMYDATAD_DATADIR:-${DEBITMYDATAD_DEFAULT_DATADIR}}
+DEBITMYDATAD_USER=${DEBITMYDATAD_USER:-${DEBITMYDATA_USER:-debitmydata}}
+DEBITMYDATAD_GROUP=${DEBITMYDATAD_GROUP:-debitmydata}
+DEBITMYDATAD_BIN=${DEBITMYDATAD_BIN:-/usr/bin/debitmydatad}
+DEBITMYDATAD_NICE=${DEBITMYDATAD_NICE:-${NICELEVEL:-0}}
+DEBITMYDATAD_OPTS="${DEBITMYDATAD_OPTS:-${DEBITMYDATA_OPTS}}"
+
+name="DebitMyData Core Daemon"
+description="DebitMyData cryptocurrency P2P network daemon"
+
+command="/usr/bin/debitmydatad"
+command_args="-pid=\"${DEBITMYDATAD_PIDFILE}\" \
+		-conf=\"${DEBITMYDATAD_CONFIGFILE}\" \
+		-datadir=\"${DEBITMYDATAD_DATADIR}\" \
+		-daemon \
+		${DEBITMYDATAD_OPTS}"
+
+required_files="${DEBITMYDATAD_CONFIGFILE}"
+start_stop_daemon_args="-u ${DEBITMYDATAD_USER} \
+			-N ${DEBITMYDATAD_NICE} -w 2000"
+pidfile="${DEBITMYDATAD_PIDFILE}"
+
+# The retry schedule to use when stopping the daemon. Could be either
+# a timeout in seconds or multiple signal/timeout pairs (like
+# "SIGKILL/180 SIGTERM/300")
+retry="${DEBITMYDATAD_SIGTERM_TIMEOUT}"
+
+depend() {
+	need localmount net
+}
+
+# verify
+# 1) that the datadir exists and is writable (or create it)
+# 2) that a directory for the pid exists and is writable
+# 3) ownership and permissions on the config file
+start_pre() {
+	checkpath \
+	-d \
+	--mode 0750 \
+	--owner "${DEBITMYDATAD_USER}:${DEBITMYDATAD_GROUP}" \
+	"${DEBITMYDATAD_DATADIR}"
+
+	checkpath \
+	-d \
+	--mode 0755 \
+	--owner "${DEBITMYDATAD_USER}:${DEBITMYDATAD_GROUP}" \
+	"${DEBITMYDATAD_PIDDIR}"
+
+	checkpath -f \
+	-o "${DEBITMYDATAD_USER}:${DEBITMYDATAD_GROUP}" \
+	-m 0660 \
+	"${DEBITMYDATAD_CONFIGFILE}"
+
+	checkconfig || return 1
+}
+
+checkconfig()
+{
+	if grep -qs '^rpcuser=' "${DEBITMYDATAD_CONFIGFILE}" && \
+		! grep -qs '^rpcpassword=' "${DEBITMYDATAD_CONFIGFILE}" ; then
+		eerror ""
+		eerror "ERROR: You must set a secure rpcpassword to run debitmydatad."
+		eerror "The setting must appear in ${DEBITMYDATAD_CONFIGFILE}"
+		eerror ""
+		eerror "This password is security critical to securing wallets "
+		eerror "and must not be the same as the rpcuser setting."
+		eerror "You can generate a suitable random password using the following "
+		eerror "command from the shell:"
+		eerror ""
+		eerror "bash -c 'tr -dc a-zA-Z0-9 < /dev/urandom | head -c32 && echo'"
+		eerror ""
+		eerror "It is recommended that you also set alertnotify so you are "
+		eerror "notified of problems:"
+		eerror ""
+		eerror "ie: alertnotify=echo %%s | mail -s \"DebitMyData Alert\"" \
+			"admin@foo.com"
+		eerror ""
+		return 1
+	fi
+}

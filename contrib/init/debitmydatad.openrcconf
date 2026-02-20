@@ -1,0 +1,33 @@
+# /etc/conf.d/debitmydatad: config file for /etc/init.d/debitmydatad
+
+# Config file location
+#DEBITMYDATAD_CONFIGFILE="/etc/debitmydata/debitmydata.conf"
+
+# What directory to write pidfile to?  (created and owned by $DEBITMYDATAD_USER)
+#DEBITMYDATAD_PIDDIR="/var/run/debitmydatad"
+
+# What filename to give the pidfile
+#DEBITMYDATAD_PIDFILE="${DEBITMYDATAD_PIDDIR}/debitmydatad.pid"
+
+# Where to write debitmydatad data (be mindful that the blockchain is large)
+#DEBITMYDATAD_DATADIR="/var/lib/debitmydatad"
+
+# User and group to own debitmydatad process
+#DEBITMYDATAD_USER="debitmydata"
+#DEBITMYDATAD_GROUP="debitmydata"
+
+# Path to debitmydatad executable
+#DEBITMYDATAD_BIN="/usr/bin/debitmydatad"
+
+# Nice value to run debitmydatad under
+#DEBITMYDATAD_NICE=0
+
+# Additional options (avoid -conf and -datadir, use flags above)
+#DEBITMYDATAD_OPTS=""
+
+# The timeout in seconds OpenRC will wait for debitmydatad to terminate
+# after a SIGTERM has been raised.
+# Note that this will be mapped as argument to start-stop-daemon's
+# '--retry' option, which means you can specify a retry schedule
+# here. For more information see man 8 start-stop-daemon.
+DEBITMYDATAD_SIGTERM_TIMEOUT=600
