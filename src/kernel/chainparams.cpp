@@ -114,8 +114,8 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_TAPROOT].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
         consensus.vDeployments[Consensus::DEPLOYMENT_TAPROOT].min_activation_height = 0;
 
-        consensus.nMinimumChainWork = uint256{"0000000000000000000000000000000000000000000000000000000000100010"};
-        consensus.defaultAssumeValid = uint256{"00000992d19e3ed58ddf4117b597955752ff029e7256487a47557a24aeb4cadd"};
+        consensus.nMinimumChainWork = uint256{"00000000000000000000000000000000000000000000000068d27d270950b7fb"};
+        consensus.defaultAssumeValid = uint256{"000000000000001493c02acded3aba2e4e29a86791a3aa15cb37e12b859b0783"};
 
         /**
          * The message start string is designed to be unlikely to occur in normal data.
@@ -154,10 +154,9 @@ public:
         m_assumeutxo_data = {};
 
         chainTxData = ChainTxData{
-            // Data from RPC: getchaintxstats 0 00000992d19e3ed58ddf4117b597955752ff029e7256487a47557a24aeb4cadd
-            .nTime    = 1771620622,
-            .tx_count = 0,
-            .dTxRate  = 0.000,
+            .nTime    = 1771635056,
+            .tx_count = 225,
+            .dTxRate  = 0.08166969147005444,
         };
     }
 };
