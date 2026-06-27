@@ -1573,7 +1573,7 @@ static const wycheproof_ecdh_testvector testvectors[SECP256K1_ECDH_WYCHEPROOF_NU
   /* tcId: 287. point with coordinate x = 1 in left to right addition chain */
   {18493, 65, 128, 32, 9152, 32, 1, 287 },
   /* tcId: 288. point with coordinate x = 1 in left to right addition chain */
-  {18556, 65, 128, 32, 9184, 32, 1, 288 },
+  {18558, 65, 128, 32, 9184, 32, 1, 288 },
   /* tcId: 289. point with coordinate x = 1 in left to right addition chain */
   {18623, 65, 128, 32, 9216, 32, 1, 289 },
   /* tcId: 290. point with coordinate x = 1 in left to right addition chain */

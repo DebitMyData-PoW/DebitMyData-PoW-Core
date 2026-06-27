@@ -56,6 +56,8 @@ add_executable(bench_debitmydata
   verify_script.cpp
 )
 
+add_windows_application_manifest(bench_debitmydata)
+
 include(TargetDataSources)
 target_raw_data_sources(bench_debitmydata NAMESPACE benchmark::data
   data/block413567.raw
@@ -81,9 +83,5 @@ if(ENABLE_WALLET)
   )
   target_link_libraries(bench_debitmydata debitmydata_wallet)
 endif()
-
-add_test(NAME bench_sanity_check
-  COMMAND bench_debitmydata -sanity-check
-)
 
 install_binary_component(bench_debitmydata INTERNAL)

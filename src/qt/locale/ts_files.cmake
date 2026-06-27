@@ -91,9 +91,11 @@ set(ts_files
   debitmydata_uz@Latn.ts
   debitmydata_ve.ts
   debitmydata_yi.ts
+  debitmydata_yo.ts
   debitmydata_yue.ts
   debitmydata_zh-Hans.ts
   debitmydata_zh-Hant.ts
+  debitmydata_zh.ts
   debitmydata_zh_CN.ts
   debitmydata_zh_HK.ts
   debitmydata_zh_TW.ts

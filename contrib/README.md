@@ -3,7 +3,7 @@ Repository Tools
 
 ### [Developer tools](/contrib/devtools) ###
 Specific tools for developers working on this repository.
-Additional tools, including the `github-merge.py` script, are available in the [maintainer-tools](https://github.com/bitcoin-core/debitmydata-maintainer-tools) repository.
+Additional tools, including the `github-merge.py` script, are available in the [maintainer-tools](https://github.com/debitmydata-core/debitmydata-maintainer-tools) repository.
 
 ### [Verify-Commits](/contrib/verify-commits) ###
 Tool to verify that every merge commit was signed by a developer using the `github-merge.py` script.
@@ -18,13 +18,16 @@ A Linux bash script that will set up traffic control (tc) to limit the outgoing 
 ### [Seeds](/contrib/seeds) ###
 Utility to generate the pnSeed[] array that is compiled into the client.
 
+### [ASMap](/contrib/asmap) ###
+Utilities to analyze and process asmap files.
+
 Build Tools and Keys
 ---------------------
 
 ### Packaging ###
 The [Debian](/contrib/debian) subfolder contains the copyright file.
 
-All other packaging related files can be found in the [debitmydata-core/packaging](https://github.com/bitcoin-core/packaging) repository.
+All other packaging related files can be found in the [debitmydata-core/packaging](https://github.com/debitmydata-core/packaging) repository.
 
 ### [MacDeploy](/contrib/macdeploy) ###
 Scripts and notes for Mac builds.

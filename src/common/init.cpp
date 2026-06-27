@@ -1,4 +1,4 @@
-// Copyright (c) 2023 The Bitcoin Core developers
+// Copyright (c) 2023-present The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -61,6 +61,39 @@ std::optional<ConfigError> InitConfig(ArgsManager& args, SettingsAbortFn setting
         if (!fs::exists(net_path)) {
             fs::create_directories(net_path / "wallets");
         }
+
+
+        // Create a default debitmydata.conf if none exists.
+        const fs::path config_path = args.GetConfigFilePath();
+
+        if (!fs::exists(config_path)) {
+            FILE* configFile = fsbridge::fopen(config_path, "a");
+            if (configFile != nullptr) {
+                const std::string strHeader =
+                    "# DebitMyData PoW (DMD) config file:\n"
+                    "\n"
+                    "# Dnsseeds:\n"
+                    "seednode=dnsseed.debitmydata.network\n"
+                    "seednode=dnsseed2.debitmydata.network\n"
+                    "\n"
+                    "# Addnodes:\n"
+                    "addnode=seed1.debitmydata.network\n"
+                    "addnode=seed2.debitmydata.network\n"
+                    "addnode=seed3.debitmydata.network\n"
+                    "addnode=seed4.debitmydata.network\n"
+                    "addnode=seed5.debitmydata.network\n"
+                    "addnode=seed6.debitmydata.network\n"
+                    "addnode=seed7.debitmydata.network\n"
+                    "addnode=seed8.debitmydata.network\n"
+                    "addnode=seed9.debitmydata.network\n"
+                    "addnode=seed10.debitmydata.network\n"
+                    "\n";
+
+                fwrite(strHeader.data(), 1, strHeader.size(), configFile);
+                fclose(configFile);
+            }
+        }
+
 
         // Show an error or warn/log if there is a debitmydata.conf file in the
         // datadir that is being ignored.

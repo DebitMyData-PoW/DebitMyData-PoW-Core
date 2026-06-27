@@ -92,9 +92,11 @@
         <file alias="uz@Latn">locale/debitmydata_uz@Latn.qm</file>
         <file alias="ve">locale/debitmydata_ve.qm</file>
         <file alias="yi">locale/debitmydata_yi.qm</file>
+        <file alias="yo">locale/debitmydata_yo.qm</file>
         <file alias="yue">locale/debitmydata_yue.qm</file>
         <file alias="zh-Hans">locale/debitmydata_zh-Hans.qm</file>
         <file alias="zh-Hant">locale/debitmydata_zh-Hant.qm</file>
+        <file alias="zh">locale/debitmydata_zh.qm</file>
         <file alias="zh_CN">locale/debitmydata_zh_CN.qm</file>
         <file alias="zh_HK">locale/debitmydata_zh_HK.qm</file>
         <file alias="zh_TW">locale/debitmydata_zh_TW.qm</file>

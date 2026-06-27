@@ -1,10 +1,11 @@
-// Copyright (c) 2012-2022 The Bitcoin Core developers
+// Copyright (c) 2012-present The Bitcoin Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include <debitmydata-build-config.h> // IWYU pragma: keep
 
 #include <clientversion.h>
+
 #include <util/string.h>
 #include <util/translation.h>
 
@@ -30,8 +31,9 @@ const std::string UA_NAME("DebitMyData PoW");
 //   - "#define BUILD_GIT_COMMIT ...", if the top commit is not tagged
 //   - "// No build information available", if proper git information is not available
 
-//! git will put "#define GIT_COMMIT_ID ..." on the next line inside archives. 
-#define GIT_COMMIT_ID "4d7d5f6b79d4c11c47e7a828d81296918fd11d4d"
+// git will expand the next line to "#define GIT_COMMIT_ID ..." inside archives:
+//
+#define GIT_COMMIT_ID "6574cb40869b96b9ffc79c19dc8f4e467d60f321"
 
 #ifdef BUILD_GIT_TAG
     #define BUILD_DESC BUILD_GIT_TAG
@@ -86,7 +88,7 @@ std::string LicenseInfo()
 {
     const std::string URL_SOURCE_CODE = "<https://github.com/DebitMyData-PoW/DebitMyData-PoW-Core>";
 
-    return CopyrightHolders(strprintf(_("Copyright (C) %i-%i"), 2025, COPYRIGHT_YEAR).translated + " ") + "\n" +
+    return CopyrightHolders(strprintf(_("Copyright (C) %i-%i"), 2026, COPYRIGHT_YEAR).translated + " ") + "\n" +
            "\n" +
            strprintf(_("Please contribute if you find %s useful. "
                        "Visit %s for further information about the software."),

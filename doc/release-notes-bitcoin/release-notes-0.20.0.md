@@ -548,7 +548,7 @@ Build system
 - #18426 scripts: `Previous_release`: improve behaviour on failed download (theStack)
 - #18429 Remove double `LIBBITCOIN_SERVER` from bench-Makefile (brakmic)
 - #18528 Create `test_fuzz` library from src/test/fuzz/fuzz.cpp (brakmic)
-- #18556 Fix boost detection for arch armv7l (hebasto)
+- #18558 Fix boost detection for arch armv7l (hebasto)
 - #18598 gitian: Add missing automake package to gitian-win-signer.yml (achow101)
 - #18676 Check libevent minimum version in configure script (hebasto)
 - #18945 Ensure source tarball has leading directory name (laanwj)
