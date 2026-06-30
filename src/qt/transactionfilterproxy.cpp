@@ -23,6 +23,8 @@ bool TransactionFilterProxy::filterAcceptsRow(int sourceRow, const QModelIndex &
     int status = index.data(TransactionTableModel::StatusRole).toInt();
     if (!showInactive && status == TransactionStatus::Conflicted)
         return false;
+    if (!showAbandoned && status == TransactionStatus::Abandoned)
+        return false;
 
     int type = index.data(TransactionTableModel::TypeRole).toInt();
     if (!(TYPE(type) & typeFilter))
@@ -118,6 +120,21 @@ void TransactionFilterProxy::setShowInactive(bool _showInactive)
 #endif
 
     this->showInactive = _showInactive;
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 10, 0)
+    endFilterChange(QSortFilterProxyModel::Direction::Rows);
+#else
+    invalidateFilter();
+#endif
+}
+
+void TransactionFilterProxy::setShowAbandoned(bool _showAbandoned)
+{
+#if QT_VERSION >= QT_VERSION_CHECK(6, 10, 0)
+    beginFilterChange();
+#endif
+
+    this->showAbandoned = _showAbandoned;
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 10, 0)
     endFilterChange(QSortFilterProxyModel::Direction::Rows);

@@ -36,6 +36,8 @@ public:
 
     /** Set whether to show conflicted transactions. */
     void setShowInactive(bool showInactive);
+    /** Set whether to show abandoned transactions. */
+    void setShowAbandoned(bool showAbandoned);
 
 protected:
     bool filterAcceptsRow(int source_row, const QModelIndex & source_parent) const override;
@@ -47,6 +49,7 @@ private:
     quint32 typeFilter{ALL_TYPES};
     CAmount minAmount{0};
     bool showInactive{true};
+    bool showAbandoned{true};
 };
 
 #endif // DEBITMYDATA_QT_TRANSACTIONFILTERPROXY_H

@@ -19,6 +19,7 @@ class TransactionFilterProxy;
 class WalletModel;
 
 QT_BEGIN_NAMESPACE
+class QCheckBox;
 class QComboBox;
 class QDateTimeEdit;
 class QFrame;
@@ -71,6 +72,7 @@ private:
 
     QComboBox *dateWidget;
     QComboBox *typeWidget;
+    QCheckBox *hideAbandonedCheckbox;
     QLineEdit *search_widget;
     QLineEdit *amountWidget;
 
@@ -118,6 +120,7 @@ Q_SIGNALS:
 public Q_SLOTS:
     void chooseDate(int idx);
     void chooseType(int idx);
+    void chooseShowAbandoned(bool hide);
     void changedAmount();
     void changedSearch();
     void exportClicked();

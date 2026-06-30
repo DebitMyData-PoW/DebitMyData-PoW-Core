@@ -898,6 +898,7 @@ RPCHelpMan listtransactions();
 RPCHelpMan listsinceblock();
 RPCHelpMan gettransaction();
 RPCHelpMan abandontransaction();
+RPCHelpMan abandonforkedtransactions();
 RPCHelpMan rescanblockchain();
 RPCHelpMan abortrescan();
 
@@ -906,6 +907,7 @@ std::span<const CRPCCommand> GetWalletRPCCommands()
     static const CRPCCommand commands[]{
         {"rawtransactions", &fundrawtransaction},
         {"wallet", &abandontransaction},
+        {"wallet", &abandonforkedtransactions},
         {"wallet", &abortrescan},
         {"wallet", &backupwallet},
         {"wallet", &bumpfee},

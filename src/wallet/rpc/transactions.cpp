@@ -941,4 +941,80 @@ RPCHelpMan abortrescan()
 },
     };
 }
+
+
+RPCHelpMan abandonforkedtransactions()
+{
+    return RPCHelpMan{
+        "abandonforkedtransactions",
+        "Mark unconfirmed, mempool-absent in-wallet transactions as abandoned if they are no\n"
+                "longer valid against the current chain (e.g. their inputs no longer exist after a\n"
+                "chain reorg). Intended for cleanup after this node has invalidated and rewound past\n"
+                "a mandatory chain anchor, leaving wallet transactions stranded from an orphaned fork.\n"
+                "Each eligible transaction is dry-run through mempool acceptance; only those rejected\n"
+                "for missing or already-spent inputs are abandoned. Transactions that are still valid\n"
+                "but simply not yet accepted (e.g. low fee) are left untouched.\n",
+                {},
+                RPCResult{
+                    RPCResult::Type::OBJ, "", "",
+                    {
+                        {RPCResult::Type::ARR, "abandoned", "Transaction ids that were marked abandoned",
+                            {{RPCResult::Type::STR_HEX, "txid", ""}}},
+                    }
+                },
+                RPCExamples{
+                    HelpExampleCli("abandonforkedtransactions", "")
+            + HelpExampleRpc("abandonforkedtransactions", "")
+                },
+        [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue
+{
+    std::shared_ptr<CWallet> const pwallet = GetWalletForJSONRPCRequest(request);
+    if (!pwallet) return UniValue::VNULL;
+
+    pwallet->BlockUntilSyncedToCurrentChain();
+
+    LOCK(pwallet->cs_wallet);
+
+    std::vector<Txid> candidates;
+    for (const auto& [txid, wtx] : pwallet->mapWallet) {
+        if (pwallet->GetTxDepthInMainChain(wtx) != 0 || wtx.InMempool()) {
+            continue; // confirmed or already in mempool: not a candidate
+        }
+        if (wtx.isAbandoned() || wtx.IsCoinBase()) {
+            continue; // already handled, or coinbase (never resubmittable anyway)
+        }
+        candidates.push_back(txid);
+    }
+
+    UniValue abandoned(UniValue::VARR);
+    for (const auto& txid : candidates) {
+        auto it = pwallet->mapWallet.find(txid);
+        if (it == pwallet->mapWallet.end()) continue; // already swept as a descendant
+        CWalletTx& wtx = it->second;
+
+        std::string err_string;
+        bool accepted = pwallet->SubmitTxMemoryPoolAndRelay(wtx, err_string, node::TxBroadcast::MEMPOOL_NO_BROADCAST);
+        if (accepted) continue; // genuinely still valid: leave it alone, now in mempool
+
+        // Only abandon if rejection was specifically due to missing/spent inputs -
+        // i.e. this transaction's inputs no longer exist on the current chain.
+        // Other rejection reasons (low fee, in-mempool conflict, etc.) mean the
+        // transaction may still be legitimately pending; leave those untouched.
+        if (err_string.find("missing") != std::string::npos ||
+            err_string.find("Missing") != std::string::npos ||
+            err_string.find("bad-txns-inputs-missingorspent") != std::string::npos) {
+            if (pwallet->AbandonTransaction(wtx)) {
+                abandoned.push_back(txid.GetHex());
+            }
+        }
+    }
+
+    UniValue result(UniValue::VOBJ);
+    result.pushKV("abandoned", abandoned);
+    return result;
+},
+    };
+}
+
+
 } // namespace wallet

@@ -23,6 +23,7 @@
 #include <optional>
 
 #include <QApplication>
+#include <QCheckBox>
 #include <QComboBox>
 #include <QDateTimeEdit>
 #include <QDesktopServices>
@@ -88,6 +89,11 @@ TransactionView::TransactionView(const PlatformStyle *platformStyle, QWidget *pa
     typeWidget->addItem(tr("Other"), TransactionFilterProxy::TYPE(TransactionRecord::Other));
 
     hlayout->addWidget(typeWidget);
+
+    hideAbandonedCheckbox = new QCheckBox(tr("Hide abandoned"), this);
+    hideAbandonedCheckbox->setChecked(false); // default: show everything, same as today
+    hlayout->addWidget(hideAbandonedCheckbox);
+    connect(hideAbandonedCheckbox, &QCheckBox::toggled, this, &TransactionView::chooseShowAbandoned);
 
     search_widget = new QLineEdit(this);
     search_widget->setPlaceholderText(tr("Enter address, transaction id, or label to search"));
@@ -624,4 +630,10 @@ void TransactionView::closeOpenedDialogs()
         dlg->close();
     }
     m_opened_dialogs.clear();
+}
+
+void TransactionView::chooseShowAbandoned(bool hide)
+{
+    if (!transactionProxyModel) return;
+    transactionProxyModel->setShowAbandoned(!hide);
 }
