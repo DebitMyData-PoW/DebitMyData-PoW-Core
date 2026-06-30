@@ -1,48 +1,48 @@
-\# ⚠ Mandatory Upgrade
+# ⚠ Mandatory Upgrade
 
 
 
-\*\*All users, miners, pools, explorers and exchanges must upgrade to this release.\*\*
+**All users, miners, pools, explorers and exchanges must upgrade to this release.**
 
 
 
-This release fixes a consensus issue introduced in the previous core version that caused the blockchain to split beginning at block \*\*70159\*\*.
+This release fixes a consensus issue introduced in the previous core version that caused the blockchain to split beginning at block **70159**.
 
 
 
-\## What's fixed
+## What's fixed
 
 
 
-\- Restores the intended \*\*35 DMD\*\* block reward.
+- Restores the intended **35 DMD** block reward.
 
-\- Enforces the canonical blockchain from block \*\*70159\*\*.
+- Enforces the canonical blockchain from block **70159**.
 
-\- Automatically detects and invalidates obsolete forks.
+- Automatically detects and invalidates obsolete forks.
 
-\- Nodes running an obsolete chain will automatically re-synchronize with the canonical blockchain.
+- Nodes running an obsolete chain will automatically re-synchronize with the canonical blockchain.
 
-\- Updated chain parameters (`minimumChainWork`, `defaultAssumeValid`, `chainTxData`).
-
-
-
-\## Required action
+- Updated chain parameters (`minimumChainWork`, `defaultAssumeValid`, `chainTxData`).
 
 
 
-\- Upgrade to \*\*v1.3.0\*\*.
-
-\- If your node was running an affected version, allow it to re-synchronize with the canonical blockchain.
-
-\- Pools, exchanges, explorers and services should upgrade immediately.
+## Required action
 
 
 
-\## Previous releases
+- Upgrade to **v1.3.0**.
+
+- If your node was running an affected version, allow it to re-synchronize with the canonical blockchain.
+
+- Pools, exchanges, explorers and services should upgrade immediately.
 
 
 
-Versions \*\*v1.2.0\*\* and \*\*v1.2.1\*\* are obsolete due to a consensus issue and should no longer be used.
+## Previous releases
+
+
+
+Versions **v1.2.0** and **v1.2.1** are obsolete due to a consensus issue and should no longer be used.
 
 
 
