@@ -1949,6 +1949,20 @@ void Chainstate::CheckForkWarningConditions()
     }
 
     if (m_chainman.m_best_invalid && m_chainman.m_best_invalid->nChainWork > m_chain.Tip()->nChainWork + (GetBlockProof(*m_chain.Tip()) * 6)) {
+
+        // Ignore the known/expected invalid fork rejected by the mandatory chain anchor.
+        const Consensus::Params& params = m_chainman.GetConsensus();
+        if (params.mandatory_block_height &&
+            params.mandatory_block_hash && 
+            m_chainman.m_best_invalid->nHeight >= *params.mandatory_block_height) {
+            const CBlockIndex* anchor_ancestor =
+                m_chainman.m_best_invalid->GetAncestor(*params.mandatory_block_height);
+            if (anchor_ancestor && anchor_ancestor->GetBlockHash() != *params.mandatory_block_hash) {
+                m_chainman.GetNotifications().warningUnset(kernel::Warning::LARGE_WORK_INVALID_CHAIN);
+                return;
+            }
+        }
+
         LogWarning("Found invalid chain more than 6 blocks longer than our best chain. This could be due to database corruption or consensus incompatibility with peers.");
         m_chainman.GetNotifications().warningSet(
             kernel::Warning::LARGE_WORK_INVALID_CHAIN,
