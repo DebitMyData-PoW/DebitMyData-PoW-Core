@@ -97,8 +97,8 @@ public:
         consensus.fPowAllowMinDifficultyBlocks = false;
         consensus.enforce_BIP94 = false;
         consensus.fPowNoRetargeting = false;
-        consensus.mandatory_block_height = 70684;
-        consensus.mandatory_block_hash = uint256::FromHex("0000000000000a4a190f5e17901910285bcc774299c1c141f95579c31aa48304").value();
+        consensus.mandatory_block_height = 70159;
+        consensus.mandatory_block_hash = uint256::FromHex("00000000000004b1c66c5c86b9af015e2c8c972a3e6c22b6fb3b0c799388db2a").value();
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].bit = 28;
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].nStartTime = Consensus::BIP9Deployment::NEVER_ACTIVE;
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
@@ -112,8 +112,8 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_TAPROOT].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
         consensus.vDeployments[Consensus::DEPLOYMENT_TAPROOT].min_activation_height = 0;
 
-        consensus.nMinimumChainWork = uint256{"0000000000000000000000000000000000000000000000d3e4610fb2a8287bb5"};
-        consensus.defaultAssumeValid = uint256{"0000000000000a3643a5c199272f54b714027462fb32b1540197496006fbb805"};
+        consensus.nMinimumChainWork = uint256{"0000000000000000000000000000000000000000000000d36ab490ce9eb079bd"};
+        consensus.defaultAssumeValid = uint256{"0000000000000662b0b4cfbe430e01f89d77a369da2940d4da68f7155fec5f99"};
 
         /**
          * The message start string is designed to be unlikely to occur in normal data.
@@ -153,14 +153,14 @@ public:
         m_assumeutxo_data = {};
 
         chainTxData = ChainTxData{
-            .nTime    = 1782788652,
-            .tx_count = 130987,
-            .dTxRate  = 0.01174144107416702,
+            .nTime    = 1782852459,
+            .tx_count = 127687,
+            .dTxRate  = 0.01138021884508341,
         };
 
         m_headers_sync_params = HeadersSyncParams{
             .commitment_period = 235,
-            .redownload_buffer_size = 5544, // 5544/235 = ~23.6 commitments
+            .redownload_buffer_size = 5553, // 5553/235 = ~23.6 commitments
         };
 
     }

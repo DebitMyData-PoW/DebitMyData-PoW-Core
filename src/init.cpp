@@ -1428,7 +1428,7 @@ static void EnforceMandatoryAnchor(ChainstateManager& chainman)
     {
         LOCK(chainman.GetMutex());
         const CChain& active = chainman.ActiveChain();
-        if (active.Height() < *params.mandatory_block_height) return; // hasn't reached anchor yet
+        if (active.Height() < *params.mandatory_block_height) return;
         CBlockIndex* candidate = active[*params.mandatory_block_height];
         if (candidate && candidate->GetBlockHash() != *params.mandatory_block_hash) {
             bad = candidate;
@@ -1436,18 +1436,115 @@ static void EnforceMandatoryAnchor(ChainstateManager& chainman)
     }
     if (!bad) return;
 
-    LogWarning("Active chain diverges from mandatory anchor at height %d (have %s, expected %s) — invalidating and rewinding for re-sync from peers.\n",
-               *params.mandatory_block_height, bad->GetBlockHash().ToString(), params.mandatory_block_hash->ToString());
+    LogWarning("Active chain diverges from mandatory anchor at height %d "
+               "(have %s, expected %s) — invalidating and rewinding for "
+               "re-sync from peers.\n",
+               *params.mandatory_block_height, bad->GetBlockHash().ToString(),
+               params.mandatory_block_hash->ToString());
 
     BlockValidationState state;
     chainman.ActiveChainstate().InvalidateBlock(state, bad);
+
     if (state.IsValid()) {
+        // The competing fork's binary may have stamped BLOCK_FAILED /
+        // BLOCK_FAILED_CHILD flags on the correct chain's blocks via its
+        // own EnforceMandatoryAnchor running with a different hash.
+        // Clear those flags and recalculate the best header so
+        // ActivateBestChain can connect the correct chain immediately.
+        {
+            LOCK(chainman.GetMutex());
+            CBlockIndex* correct = chainman.m_blockman.LookupBlockIndex(
+                *params.mandatory_block_hash);
+            if (correct) {
+                chainman.ActiveChainstate().ResetBlockFailureFlags(correct);
+                chainman.RecalculateBestHeader();
+                LogWarning("EnforceMandatoryAnchor: cleared failure flags "
+                           "and recalculated best header for correct chain "
+                           "at height %d.\n",
+                           *params.mandatory_block_height);
+            }
+        }
+
         chainman.ActiveChainstate().ActivateBestChain(state);
+
+        // Explicitly set m_best_header to the active chain tip after the
+        // reorg. RecalculateBestHeader alone is insufficient because the
+        // wrong fork's headers remain in the block index with BLOCK_VALID_TREE
+        // status and equal work, causing it to win the comparison. Pointing
+        // m_best_header directly at the active tip ensures getblockchaininfo
+        // 'headers' reflects the correct chain immediately.
+        {
+            LOCK(chainman.GetMutex());
+            CBlockIndex* active_tip = chainman.ActiveChain().Tip();
+            if (active_tip && chainman.m_best_header != active_tip) {
+                chainman.m_best_header = active_tip;
+                LogWarning("EnforceMandatoryAnchor: set best header to "
+                           "active tip at height %d (%s).\n",
+                           active_tip->nHeight,
+                           active_tip->GetBlockHash().ToString());
+            }
+        }
+
+        // Force chainstate flush and notifications after the reorg.
+        // The reorg happens early in startup before wallet signal
+        // subscriptions and the RPC layer are fully active — without
+        // this, Qt and getblockchaininfo show stale pre-reorg state
+        // until the node is manually restarted.
+        chainman.ActiveChainstate().ForceFlushStateToDisk();
     }
+
     if (!state.IsValid()) {
-        LogError("EnforceMandatoryAnchor: failed to invalidate/rewind chain: %s\n", state.ToString());
+        LogError("EnforceMandatoryAnchor: failed to invalidate/rewind "
+                 "chain: %s\n", state.ToString());
     }
 }
+
+// One-shot subscriber that watches for the correct chain to connect after
+// a mandatory anchor enforcement. Fires ForceFlushStateToDisk the first
+// time the active tip's ancestor at the anchor height matches the expected
+// hash, ensuring the wallet and Qt UI see the completed reorg without
+// requiring a manual restart.
+class MandatoryAnchorWatcher : public CValidationInterface,
+                                public std::enable_shared_from_this<MandatoryAnchorWatcher>
+{
+private:
+    ChainstateManager& m_chainman;
+    ValidationSignals& m_signals;
+    std::atomic<bool> m_done{false};
+
+public:
+    MandatoryAnchorWatcher(ChainstateManager& chainman, ValidationSignals& signals)
+        : m_chainman{chainman}, m_signals{signals} {}
+
+    void ActiveTipChange(const CBlockIndex& new_tip, bool is_ibd) override
+    {
+        if (m_done.exchange(true)) return;
+
+        const Consensus::Params& params = m_chainman.GetConsensus();
+        if (!params.mandatory_block_height) return;
+
+        const CBlockIndex* ancestor = new_tip.GetAncestor(*params.mandatory_block_height);
+        if (!ancestor || ancestor->GetBlockHash() != *params.mandatory_block_hash) {
+            m_done.store(false); // not the right chain yet, keep watching
+            return;
+        }
+
+        LogWarning("MandatoryAnchorWatcher: correct chain connected at height %d, "
+                   "flushing chainstate to notify wallet and UI.\n",
+                   *params.mandatory_block_height);
+
+        m_chainman.ActiveChainstate().ForceFlushStateToDisk();
+
+        // Schedule unregistration outside of the callback to avoid
+        // invalidating the iterator inside ValidationSignalsImpl::Iterate,
+        // and use shared_from_this so the object stays alive until the
+        // queued unregister actually executes.
+        auto self = shared_from_this();
+        m_signals.CallFunctionInValidationInterfaceQueue([this, self]() {
+            m_signals.UnregisterSharedValidationInterface(self);
+        });
+    }
+};
 
 
 bool AppInitMain(NodeContext& node, interfaces::BlockAndHeaderTipInfo* tip_info)
@@ -2319,6 +2416,15 @@ bool AppInitMain(NodeContext& node, interfaces::BlockAndHeaderTipInfo* tip_info)
         }
     }
 
+    // Register the one-shot watcher only if mandatory anchor is configured.
+    // Uses shared_ptr so the object stays alive until the queued unregister
+    // executes, avoiding a use-after-free inside the callback queue.
+    std::shared_ptr<MandatoryAnchorWatcher> anchor_watcher;
+    if (chainman.GetConsensus().mandatory_block_height) {
+        anchor_watcher = std::make_shared<MandatoryAnchorWatcher>(
+            chainman, *Assert(node.validation_signals));
+        Assert(node.validation_signals)->RegisterSharedValidationInterface(anchor_watcher);
+    }
     if (!node.connman->Start(scheduler, connOptions)) {
         return false;
     }
