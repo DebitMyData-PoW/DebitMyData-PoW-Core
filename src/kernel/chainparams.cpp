@@ -97,6 +97,8 @@ public:
         consensus.fPowAllowMinDifficultyBlocks = false;
         consensus.enforce_BIP94 = false;
         consensus.fPowNoRetargeting = false;
+        consensus.mandatory_block_height = 70684;
+        consensus.mandatory_block_hash = uint256::FromHex("0000000000000a4a190f5e17901910285bcc774299c1c141f95579c31aa48304").value();
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].bit = 28;
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].nStartTime = Consensus::BIP9Deployment::NEVER_ACTIVE;
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
@@ -110,8 +112,8 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_TAPROOT].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
         consensus.vDeployments[Consensus::DEPLOYMENT_TAPROOT].min_activation_height = 0;
 
-        consensus.nMinimumChainWork = uint256{"0000000000000000000000000000000000000000000000d36582e9cf201ef011"};
-        consensus.defaultAssumeValid = uint256{"0000000000001317cac15540ebdabd482c830c42ced87441c94a5dde59a89d61"};
+        consensus.nMinimumChainWork = uint256{"0000000000000000000000000000000000000000000000d3e4610fb2a8287bb5"};
+        consensus.defaultAssumeValid = uint256{"0000000000000a3643a5c199272f54b714027462fb32b1540197496006fbb805"};
 
         /**
          * The message start string is designed to be unlikely to occur in normal data.
@@ -151,14 +153,14 @@ public:
         m_assumeutxo_data = {};
 
         chainTxData = ChainTxData{
-            .nTime    = 1782290941,
-            .tx_count = 68835,
-            .dTxRate  = 0.01176844664838795,
+            .nTime    = 1782788652,
+            .tx_count = 130987,
+            .dTxRate  = 0.01174144107416702,
         };
 
         m_headers_sync_params = HeadersSyncParams{
             .commitment_period = 235,
-            .redownload_buffer_size = 5553, // 5553/235 = ~23.6 commitments
+            .redownload_buffer_size = 5544, // 5544/235 = ~23.6 commitments
         };
 
     }

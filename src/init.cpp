@@ -1418,6 +1418,38 @@ static ChainstateLoadResult InitAndLoadChainstate(
     return {status, error};
 };
 
+
+static void EnforceMandatoryAnchor(ChainstateManager& chainman)
+{
+    const Consensus::Params& params = chainman.GetConsensus();
+    if (!params.mandatory_block_height) return; // unset on this network: no-op
+
+    CBlockIndex* bad{nullptr};
+    {
+        LOCK(chainman.GetMutex());
+        const CChain& active = chainman.ActiveChain();
+        if (active.Height() < *params.mandatory_block_height) return; // hasn't reached anchor yet
+        CBlockIndex* candidate = active[*params.mandatory_block_height];
+        if (candidate && candidate->GetBlockHash() != *params.mandatory_block_hash) {
+            bad = candidate;
+        }
+    }
+    if (!bad) return;
+
+    LogWarning("Active chain diverges from mandatory anchor at height %d (have %s, expected %s) — invalidating and rewinding for re-sync from peers.\n",
+               *params.mandatory_block_height, bad->GetBlockHash().ToString(), params.mandatory_block_hash->ToString());
+
+    BlockValidationState state;
+    chainman.ActiveChainstate().InvalidateBlock(state, bad);
+    if (state.IsValid()) {
+        chainman.ActiveChainstate().ActivateBestChain(state);
+    }
+    if (!state.IsValid()) {
+        LogError("EnforceMandatoryAnchor: failed to invalidate/rewind chain: %s\n", state.ToString());
+    }
+}
+
+
 bool AppInitMain(NodeContext& node, interfaces::BlockAndHeaderTipInfo* tip_info)
 {
     const ArgsManager& args = *Assert(node.args);
@@ -2070,6 +2102,13 @@ bool AppInitMain(NodeContext& node, interfaces::BlockAndHeaderTipInfo* tip_info)
     if (ShutdownRequested(node)) {
         return true;
     }
+
+    // Enforce the post-fork mandatory chain anchor (height 70684) before
+    // this node opens any P2P connections. If the locally loaded chainstate
+    // diverges from the known-good chain at that height, invalidate the bad
+    // block and rewind so ActivateBestChain (triggered below by peer activity)
+    // can re-sync the correct fork instead of extending the wrong one.
+    EnforceMandatoryAnchor(chainman);
 
     // ********************************************************* Step 12: start node
 

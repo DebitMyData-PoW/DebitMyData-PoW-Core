@@ -90,6 +90,8 @@ struct Params {
      * - buried in the chain, and
      * - fail if the default script verify flags are applied.
      */
+    std::optional<int> mandatory_block_height;
+    std::optional<uint256> mandatory_block_hash;
     std::map<uint256, script_verify_flags> script_flag_exceptions;
     /** Block height and hash at which BIP34 becomes active */
     int BIP34Height;

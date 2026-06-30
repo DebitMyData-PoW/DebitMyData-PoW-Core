@@ -29,6 +29,7 @@
 #include <kernel/types.h>
 #include <kernel/warning.h>
 #include <logging/timer.h>
+#include <logging.h>
 #include <node/blockstorage.h>
 #include <node/utxo_snapshot.h>
 #include <policy/ephemeral_policy.h>
@@ -4111,12 +4112,46 @@ arith_uint256 CalculateClaimedHeadersWork(std::span<const CBlockHeader> headers)
  */
 static bool ContextualCheckBlockHeader(const CBlockHeader& block, BlockValidationState& state, BlockManager& blockman, const ChainstateManager& chainman, const CBlockIndex* pindexPrev) EXCLUSIVE_LOCKS_REQUIRED(::cs_main)
 {
-    AssertLockHeld(::cs_main);
-    assert(pindexPrev != nullptr);
-    const int nHeight = pindexPrev->nHeight + 1;
+
+AssertLockHeld(::cs_main);
+assert(pindexPrev != nullptr);
+const Consensus::Params& consensusParams = chainman.GetConsensus();
+const int nHeight = pindexPrev->nHeight + 1;
+
+if (consensusParams.mandatory_block_height) {
+    assert(consensusParams.mandatory_block_hash.has_value());
+    const int anchor_height = *consensusParams.mandatory_block_height;
+    const uint256& anchor_hash = *consensusParams.mandatory_block_hash;
+    if (nHeight == anchor_height) {
+        if (block.GetHash() != anchor_hash) {
+            LogError("%s: block at mandatory anchor height %d has hash %s, expected %s\n",
+                      __func__, anchor_height, block.GetHash().ToString(), anchor_hash.ToString());
+            return state.Invalid(
+                BlockValidationResult::BLOCK_CONSENSUS,
+                "bad-chain-anchor",
+                "mandatory anchor block mismatch");
+        }
+    } else if (nHeight > anchor_height) {
+        const CBlockIndex* anchor = pindexPrev->GetAncestor(anchor_height);
+        if (!anchor || anchor->GetBlockHash() != anchor_hash) {
+            LogError("%s: chain at height %d does not contain mandatory anchor at height %d (have %s, expected %s)\n",
+                      __func__, nHeight, anchor_height,
+                      anchor ? anchor->GetBlockHash().ToString() : "<missing>",
+                      anchor_hash.ToString());
+            return state.Invalid(
+                BlockValidationResult::BLOCK_CONSENSUS,
+                "bad-chain-anchor",
+                "mandatory chain anchor mismatch");
+        }
+    }
+}
+
+
+
+
 
     // Check proof of work
-    const Consensus::Params& consensusParams = chainman.GetConsensus();
+    //const Consensus::Params& consensusParams = chainman.GetConsensus();
     if (block.nBits != GetNextWorkRequired(pindexPrev, &block, consensusParams))
         return state.Invalid(BlockValidationResult::BLOCK_INVALID_HEADER, "bad-diffbits", "incorrect proof of work");
 
