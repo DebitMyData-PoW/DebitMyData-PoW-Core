@@ -112,8 +112,8 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_TAPROOT].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
         consensus.vDeployments[Consensus::DEPLOYMENT_TAPROOT].min_activation_height = 0;
 
-        consensus.nMinimumChainWork = uint256{"0000000000000000000000000000000000000000000000d36ab490ce9eb079bd"};
-        consensus.defaultAssumeValid = uint256{"0000000000000662b0b4cfbe430e01f89d77a369da2940d4da68f7155fec5f99"};
+        consensus.nMinimumChainWork = uint256{"0000000000000000000000000000000000000000000000d3b4b5a57f551dfbe0"};
+        consensus.defaultAssumeValid = uint256{"0000000000000983428b013e720f68cf3b5d5b2f60a3b1400d9e71ebd309ed6d"};
 
         /**
          * The message start string is designed to be unlikely to occur in normal data.
@@ -152,15 +152,15 @@ public:
 
         m_assumeutxo_data = {};
 
-        chainTxData = ChainTxData{
-            .nTime    = 1782852459,
-            .tx_count = 127687,
-            .dTxRate  = 0.01138021884508341,
+        chainTxData = ChainTxData {
+            .nTime    = 1782957465,
+            .tx_count = 128885,
+            .dTxRate  = 0.01138084528284559,
         };
 
         m_headers_sync_params = HeadersSyncParams{
             .commitment_period = 235,
-            .redownload_buffer_size = 5553, // 5553/235 = ~23.6 commitments
+            .redownload_buffer_size = 5549, // 5549/235 = ~23.6 commitments
         };
 
     }
