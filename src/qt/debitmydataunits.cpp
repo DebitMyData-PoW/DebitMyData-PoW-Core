@@ -33,8 +33,8 @@ QString DebitMyDataUnits::longName(Unit unit)
     switch (unit) {
     case Unit::DMD: return QString("DMD");
     case Unit::mDMD: return QString("mDMD");
-    case Unit::uDMD: return QString::fromUtf8("µDMD (bits)");
-    case Unit::SAT: return QString("Satoshi (sat)");
+    case Unit::uDMD: return QString::fromUtf8("µDMD (debits)");
+    case Unit::SAT: return QString("nDMD (data)");
     } // no default case, so the compiler can warn about missing cases
     assert(false);
 }
@@ -44,8 +44,8 @@ QString DebitMyDataUnits::shortName(Unit unit)
     switch (unit) {
     case Unit::DMD: return longName(unit);
     case Unit::mDMD: return longName(unit);
-    case Unit::uDMD: return QString("bits");
-    case Unit::SAT: return QString("sat");
+    case Unit::uDMD: return QString("debits");
+    case Unit::SAT: return QString("data");
     } // no default case, so the compiler can warn about missing cases
     assert(false);
 }
@@ -56,7 +56,7 @@ QString DebitMyDataUnits::description(Unit unit)
     case Unit::DMD: return QString("DebitMyDatas");
     case Unit::mDMD: return QString("Milli-DebitMyDatas (1 / 1" THIN_SP_UTF8 "000)");
     case Unit::uDMD: return QString("Micro-DebitMyDatas (bits) (1 / 1" THIN_SP_UTF8 "000" THIN_SP_UTF8 "000)");
-    case Unit::SAT: return QString("Satoshi (sat) (1 / 100" THIN_SP_UTF8 "000" THIN_SP_UTF8 "000)");
+    case Unit::SAT: return QString("nDMD (data) (1 / 100" THIN_SP_UTF8 "000" THIN_SP_UTF8 "000)");
     } // no default case, so the compiler can warn about missing cases
     assert(false);
 }
