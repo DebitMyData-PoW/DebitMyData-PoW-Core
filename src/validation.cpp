@@ -4214,8 +4214,8 @@ static bool ContextualCheckBlock(const CBlock& block, BlockValidationState& stat
 
     // Enforce BIP113 (Median Time Past).
     bool enforce_locktime_median_time_past{false};
-    if (DeploymentActiveAfter(pindexPrev, chainman, Consensus::DEPLOYMENT_CSV)) {
-        assert(pindexPrev != nullptr);
+    // CSVHeight == 0 && reindex fix: genesis has no parent, so MTP can't apply to it
+    if (pindexPrev != nullptr && DeploymentActiveAfter(pindexPrev, chainman, Consensus::DEPLOYMENT_CSV)) {
         enforce_locktime_median_time_past = true;
     }
 
@@ -4429,8 +4429,11 @@ bool ChainstateManager::AcceptBlock(const std::shared_ptr<const CBlock>& pblock,
 
     const CChainParams& params{GetParams()};
 
+    // BIP34Height == 0 && reindex fix: skip contextual checks for the genesis block,
+    // otherwise it is rejected as "bad-cb-height" during -reindex
+    const bool fIsGenesis{block.GetHash() == params.GetConsensus().hashGenesisBlock};
     if (!CheckBlock(block, state, params.GetConsensus()) ||
-        !ContextualCheckBlock(block, state, *this, pindex->pprev)) {
+        (!fIsGenesis && !ContextualCheckBlock(block, state, *this, pindex->pprev))) {
         if (Assume(state.IsInvalid())) {
             ActiveChainstate().InvalidBlockFound(pindex, state);
         }

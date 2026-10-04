@@ -55,7 +55,7 @@ QString DebitMyDataUnits::description(Unit unit)
     switch (unit) {
     case Unit::DMD: return QString("DebitMyDatas");
     case Unit::mDMD: return QString("Milli-DebitMyDatas (1 / 1" THIN_SP_UTF8 "000)");
-    case Unit::uDMD: return QString("Micro-DebitMyDatas (bits) (1 / 1" THIN_SP_UTF8 "000" THIN_SP_UTF8 "000)");
+    case Unit::uDMD: return QString("Micro-DebitMyDatas (debits) (1 / 1" THIN_SP_UTF8 "000" THIN_SP_UTF8 "000)");
     case Unit::SAT: return QString("nDMD (data) (1 / 100" THIN_SP_UTF8 "000" THIN_SP_UTF8 "000)");
     } // no default case, so the compiler can warn about missing cases
     assert(false);
