@@ -953,7 +953,7 @@ Signing is only possible with addresses of the type 'legacy'.</source>
         <translation type="unfinished">(%1caeedig</translation>
     </message>
     <message>
-        <source>Can vary +/- %1 satoshi(s) per input.</source>
+        <source>Can vary +/- %1 data per input.</source>
         <translation type="unfinished">Gall amrywio +/-%1satoshi(s) y tu mewn.</translation>
     </message>
     <message>

@@ -3,7 +3,7 @@
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-""" Example logging DebitMyData Core mempool events using the mempool:added,
+""" Example logging Bitcoin Core mempool events using the mempool:added,
     mempool:removed, mempool:replaced, and mempool:rejected tracepoints. """
 
 import curses
@@ -332,15 +332,15 @@ class Dashboard:
         if type_ == "added":
             return (
                 f"{ts} added {bytes(data.hash)[::-1].hex()}"
-                f" with feerate {data.fee/data.vsize:.2f} sat/vB"
-                f" ({data.fee} sat, {data.vsize} vbytes)"
+                f" with feerate {data.fee/data.vsize:.2f} data/vB"
+                f" ({data.fee} data, {data.vsize} vbytes)"
             )
 
         if type_ == "removed":
             return (
                 f"{ts} removed {bytes(data.hash)[::-1].hex()}"
-                f" with feerate {data.fee/data.vsize:.2f} sat/vB"
-                f" ({data.fee} sat, {data.vsize} vbytes)"
+                f" with feerate {data.fee/data.vsize:.2f} data/vB"
+                f" ({data.fee} data, {data.vsize} vbytes)"
                 f" received {ts_dt.timestamp()-data.entry_time:.1f} seconds ago"
                 f": {data.reason.decode('UTF-8')}"
             )
@@ -354,12 +354,12 @@ class Dashboard:
         if type_ == "replaced":
             return (
                 f"{ts} replaced {bytes(data.replaced_hash)[::-1].hex()}"
-                f" with feerate {data.replaced_fee/data.replaced_vsize:.2f} sat/vB"
+                f" with feerate {data.replaced_fee/data.replaced_vsize:.2f} data/vB"
                 f" received {ts_dt.timestamp()-data.replaced_entry_time:.1f} seconds ago"
-                f" ({data.replaced_fee} sat, {data.replaced_vsize} vbytes)"
+                f" ({data.replaced_fee} data, {data.replaced_vsize} vbytes)"
                 f" with {bytes(data.replacement_hash)[::-1].hex()}"
-                f" with feerate {data.replacement_fee/data.replacement_vsize:.2f} sat/vB"
-                f" ({data.replacement_fee} sat, {data.replacement_vsize} vbytes)"
+                f" with feerate {data.replacement_fee/data.replacement_vsize:.2f} data/vB"
+                f" ({data.replacement_fee} data, {data.replacement_vsize} vbytes)"
             )
 
         raise NotImplementedError("Unsupported event type: {type_}")

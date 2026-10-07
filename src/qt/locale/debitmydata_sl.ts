@@ -1011,8 +1011,8 @@ Podpisovanje je možno le s podedovanimi ("legacy") naslovi.</translation>
         <translation type="unfinished">Kopiraj vračilo</translation>
     </message>
     <message>
-        <source>Can vary +/- %1 satoshi(s) per input.</source>
-        <translation type="unfinished">Lahko se razlikuje za +/- %1 sat na vhod.</translation>
+        <source>Can vary +/- %1 data per input.</source>
+        <translation type="unfinished">Lahko se razlikuje za +/- %1 data na vhod.</translation>
     </message>
     <message>
         <source>(no label)</source>
@@ -2971,7 +2971,7 @@ Za več informacij glede uporabe konzole uporabite ukaz %6.
     <message>
         <source>Specify a custom fee per kB (1,000 bytes) of the transaction's virtual size.
 
-Note:  Since the fee is calculated on a per-byte basis, a fee rate of "100 satoshis per kvB" for a transaction size of 500 virtual bytes (half of 1 kvB) would ultimately yield a fee of only 50 satoshis.</source>
+Note:  Since the fee is calculated on a per-byte basis, a fee rate of "100 debits per kvB" for a transaction size of 500 virtual bytes (half of 1 kvB) would ultimately yield a fee of only 50 debits.</source>
         <translation type="unfinished">Določite poljubno provizijo na kB (1000 bajtov) navidezne velikosti transakcije.
 
 Opomba: Ker se provizija izračuna na bajt, bi provizija "100 satoshijev na kvB" za transakcijo velikosti 500 navideznih bajtov (polovica enega kvB) znašala le 50 satošijev.</translation>

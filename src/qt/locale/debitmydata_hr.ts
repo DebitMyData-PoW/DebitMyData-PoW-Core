@@ -963,7 +963,7 @@ Potpisivanje je moguće samo sa 'legacy' adresama. </translation>
         <translation type="unfinished">(%1 zaključen)</translation>
     </message>
     <message>
-        <source>Can vary +/- %1 satoshi(s) per input.</source>
+        <source>Can vary +/- %1 data per input.</source>
         <translation type="unfinished">Može varirati +/- %1 satoši(ja) po inputu.</translation>
     </message>
     <message>
@@ -1353,7 +1353,7 @@ Potpisivanje je moguće samo sa 'legacy' adresama. </translation>
     </message>
     <message>
         <source>Progress increase per hour</source>
-        <translation type="unfinished">Postotak povećanja napretka na sat</translation>
+        <translation type="unfinished">Postotak povećanja napretka na data</translation>
     </message>
     <message>
         <source>Estimated time left until synced</source>
@@ -2318,7 +2318,7 @@ Ako imate ovu grešku, od trgovca zatražite URI koji je kompatibilan sa BIP21.<
     </message>
     <message>
         <source>1 &amp;hour</source>
-        <translation type="unfinished">1 &amp;sat</translation>
+        <translation type="unfinished">1 &amp;data</translation>
     </message>
     <message>
         <source>1 d&amp;ay</source>
@@ -2702,7 +2702,7 @@ Za više informacija o korištenju ove konzile, utipkajte %6.
     <message>
         <source>Specify a custom fee per kB (1,000 bytes) of the transaction's virtual size.
 
-Note:  Since the fee is calculated on a per-byte basis, a fee rate of "100 satoshis per kvB" for a transaction size of 500 virtual bytes (half of 1 kvB) would ultimately yield a fee of only 50 satoshis.</source>
+Note:  Since the fee is calculated on a per-byte basis, a fee rate of "100 debits per kvB" for a transaction size of 500 virtual bytes (half of 1 kvB) would ultimately yield a fee of only 50 debits.</source>
         <translation type="unfinished">Zadajte prilagodenu naknadu po kB (1000 bajtova) virtualne veličine transakcije.
 
 Napomena: Budući da se naknada računa po bajtu, naknada od "100 satošija po kB" za transakciju veličine 500 bajtova (polovica od 1 kB) rezultirala bi ultimativno naknadom od samo 50 satošija.</translation>

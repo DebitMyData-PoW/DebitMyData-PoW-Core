@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.22)
 project(debitmydata-tidy
     VERSION
     1.0.0
-    DESCRIPTION "clang-tidy checks for DebitMyData Core"
+    DESCRIPTION "clang-tidy checks for Bitcoin Core"
     LANGUAGES CXX)
 
 include(GNUInstallDirs)

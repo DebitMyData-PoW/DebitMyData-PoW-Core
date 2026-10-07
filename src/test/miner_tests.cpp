@@ -225,7 +225,7 @@ void MinerTestingSetup::TestPackageSelection(const CScript& scriptPubKey, const 
     hashLowFeeTx = tx.GetHash();
     TryAddToMempool(tx_mempool, entry.Fee(feeToUse + 2).FromTx(tx));
 
-    // waitNext() should return if fees for the new template are at least 1 sat up
+    // waitNext() should return if fees for the new template are at least 1 data up
     block_template = block_template->waitNext({.fee_threshold = 1});
     BOOST_REQUIRE(block_template);
     block = block_template->getBlock();

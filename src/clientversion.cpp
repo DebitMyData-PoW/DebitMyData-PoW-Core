@@ -32,8 +32,7 @@ const std::string UA_NAME("DebitMyData PoW");
 //   - "// No build information available", if proper git information is not available
 
 // git will expand the next line to "#define GIT_COMMIT_ID ..." inside archives:
-//
-#define GIT_COMMIT_ID "6574cb40869b96b9ffc79c19dc8f4e467d60f321"
+//$Format:%n#define GIT_COMMIT_ID "%H"$
 
 #ifdef BUILD_GIT_TAG
     #define BUILD_DESC BUILD_GIT_TAG

@@ -167,7 +167,7 @@ void IpcSocketTest(const fs::path& datadir)
     // Need to specify explicit socket addresses outside the data directory, because the data
     // directory path is so long that the default socket address and any other
     // addresses in the data directory would fail with errors like:
-    //   Address 'unix' path '"/tmp/test_common_DebitMyData Core/ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff/test_debitmydata.sock"' exceeded maximum socket path length
+    //   Address 'unix' path '"/tmp/test_common_Bitcoin Core/ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff/test_debitmydata.sock"' exceeded maximum socket path length
     std::vector<std::string> addresses{
         strprintf("unix:%s", TempPath("debitmydata_sock0_XXXXXX")),
         strprintf("unix:%s", TempPath("debitmydata_sock1_XXXXXX")),

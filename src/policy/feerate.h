@@ -17,11 +17,11 @@
 #include <type_traits>
 
 const std::string CURRENCY_UNIT = "DMD"; // One formatted unit
-const std::string CURRENCY_ATOM = "sat"; // One indivisible minimum value unit
+const std::string CURRENCY_ATOM = "data"; // One indivisible minimum value unit
 
 enum class FeeRateFormat {
     DMD_KVB, //!< Use DMD/kvB fee rate unit
-    SAT_VB,  //!< Use sat/vB fee rate unit
+    SAT_VB,  //!< Use data/vB fee rate unit
 };
 
 /**

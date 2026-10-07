@@ -125,7 +125,7 @@ def check_estimates(node, fees_seen):
 
 
 def make_tx(wallet, utxo, feerate):
-    """Create a 1in-1out transaction with a specific input and feerate (sat/vb)."""
+    """Create a 1in-1out transaction with a specific input and feerate (data/vb)."""
     return wallet.create_self_transfer(
         utxo_to_spend=utxo,
         fee_rate=Decimal(feerate * 1000) / COIN,
@@ -258,7 +258,7 @@ class EstimateFeeTest(DebitMyDataTestFramework):
         # The broadcaster and block producer
         node = self.nodes[0]
         miner = self.nodes[1]
-        # In sat/vb
+        # In data/vb
         low_feerate = 1
         high_feerate = 10
         # Cache the utxos of which to replace the spender after it failed to get

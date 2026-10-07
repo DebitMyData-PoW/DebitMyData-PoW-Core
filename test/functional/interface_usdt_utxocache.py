@@ -124,7 +124,7 @@ class UTXOCacheChange(ctypes.Structure):
     ]
 
     def __repr__(self):
-        return f"UTXOCacheChange(outpoint={bytes(self.txid[::-1]).hex()}:{self.index}, height={self.height}, value={self.value}sat, is_coinbase={self.is_coinbase})"
+        return f"UTXOCacheChange(outpoint={bytes(self.txid[::-1]).hex()}:{self.index}, height={self.height}, value={self.value}data, is_coinbase={self.is_coinbase})"
 
 
 class UTXOCacheFlush(ctypes.Structure):

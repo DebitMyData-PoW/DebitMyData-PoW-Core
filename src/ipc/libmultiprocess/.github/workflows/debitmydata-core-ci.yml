@@ -2,11 +2,11 @@
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or https://opensource.org/license/mit.
 
-# Test libmultiprocess inside DebitMyData Core by replacing the subtree copy
+# Test libmultiprocess inside Bitcoin Core by replacing the subtree copy
 # with the version from this PR, then building and running IPC-related
 # unit & functional tests.
 
-name: DebitMyData Core CI
+name: Bitcoin Core CI
 
 on:
   push:
@@ -75,7 +75,7 @@ jobs:
       CCACHE_DIR: ${{ github.workspace }}/.ccache
 
     steps:
-      - name: Checkout DebitMyData Core
+      - name: Checkout Bitcoin Core
         uses: actions/checkout@v4
         with:
           repository: ${{ env.DEBITMYDATA_REPO }}
@@ -191,7 +191,7 @@ jobs:
       TSAN_OPTIONS: suppressions=${{ github.workspace }}/test/sanitizer_suppressions/tsan:halt_on_error=1:second_deadlock_stack=1
 
     steps:
-      - name: Checkout DebitMyData Core
+      - name: Checkout Bitcoin Core
         uses: actions/checkout@v4
         with:
           repository: ${{ env.DEBITMYDATA_REPO }}

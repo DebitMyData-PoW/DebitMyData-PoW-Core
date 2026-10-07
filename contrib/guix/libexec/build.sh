@@ -251,7 +251,7 @@ mkdir -p "$DISTSRC"
           ${CONFIGFLAGS} \
           "${CMAKE_EXE_LINKER_FLAGS}"
 
-    # Build DebitMyData Core
+    # Build Bitcoin Core
     cmake --build build -j "$JOBS" ${V:+--verbose}
 
     mkdir -p "$OUTDIR"
@@ -264,12 +264,12 @@ mkdir -p "$DISTSRC"
             ;;
     esac
 
-    # Setup the directory where our DebitMyData Core build for HOST will be
+    # Setup the directory where our Bitcoin Core build for HOST will be
     # installed. This directory will also later serve as the input for our
     # binary tarballs.
     INSTALLPATH="${PWD}/installed/${DISTNAME}"
     mkdir -p "${INSTALLPATH}"
-    # Install built DebitMyData Core to $INSTALLPATH
+    # Install built Bitcoin Core to $INSTALLPATH
     case "$HOST" in
         *darwin*)
             # This workaround can be dropped for CMake >= 3.27.

@@ -22,9 +22,9 @@ user inputs. Such environments include the Python3 command line interpreter or
 * Python3
 * `debitmydatad` built in the same repository as the `TestShell`.
 
-## 2. Importing `TestShell` from the DebitMyData Core repository
+## 2. Importing `TestShell` from the Bitcoin Core repository
 
-We can import the `TestShell` by adding the path of the configured DebitMyData Core
+We can import the `TestShell` by adding the path of the configured Bitcoin Core
 `test_framework` module to the beginning of the PATH variable, and then
 importing the `TestShell` class from the `test_shell` sub-package. Since
 the build system creates a copy of the `test_framework` module into a new `build/`

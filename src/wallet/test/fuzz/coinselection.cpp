@@ -143,7 +143,7 @@ FUZZ_TARGET(coin_grinder_is_optimal)
     FastRandomContext fast_random_context{ConsumeUInt256(fuzzed_data_provider)};
     CoinSelectionParams coin_params{fast_random_context};
     coin_params.m_subtract_fee_outputs = false;
-    // Set effective feerate up to MAX_MONEY sats per 1'000'000 vB (2'100'000'000 sat/vB = 21'000 DMD/kvB).
+    // Set effective feerate up to MAX_MONEY sats per 1'000'000 vB (2'100'000'000 data/vB = 21'000 DMD/kvB).
     coin_params.m_effective_feerate = CFeeRate{ConsumeMoney(fuzzed_data_provider, MAX_MONEY), 1'000'000};
     coin_params.m_min_change_target = ConsumeMoney(fuzzed_data_provider);
 
@@ -158,7 +158,7 @@ FUZZ_TARGET(coin_grinder_is_optimal)
         const int n_input_bytes{fuzzed_data_provider.ConsumeIntegralInRange<int>(1, 1'000'000)};
         // Only make UTXOs with positive effective value
         const CAmount input_fee = coin_params.m_effective_feerate.GetFee(n_input_bytes);
-        // Ensure that each UTXO has at least an effective value of 1 sat
+        // Ensure that each UTXO has at least an effective value of 1 data
         const CAmount eff_value{fuzzed_data_provider.ConsumeIntegralInRange<CAmount>(1, MAX_MONEY + group_pos.size() - max_spendable - max_output_groups)};
         const CAmount amount{eff_value + input_fee};
         std::vector<COutput> temp_utxo_pool;
@@ -224,7 +224,7 @@ FUZZ_TARGET(bnb_finds_min_waste)
     FastRandomContext fast_random_context{ConsumeUInt256(fuzzed_data_provider)};
     CoinSelectionParams coin_params{fast_random_context};
     coin_params.m_subtract_fee_outputs = false;
-    // Set effective feerate up to 10'000'000 sats per kvB (10'000 sat/vB).
+    // Set effective feerate up to 10'000'000 sats per kvB (10'000 data/vB).
     coin_params.m_effective_feerate = CFeeRate{ConsumeMoney(fuzzed_data_provider, 10'000'000), 1'000};
     coin_params.m_long_term_feerate = CFeeRate{ConsumeMoney(fuzzed_data_provider, 10'000'000), 1'000};
     coin_params.m_discard_feerate = CFeeRate{ConsumeMoney(fuzzed_data_provider, 10'000'000), 1'000};
@@ -255,7 +255,7 @@ FUZZ_TARGET(bnb_finds_min_waste)
         // With maximum m_effective_feerate 10'000 s/vB and n_input_bytes = 20'000 B, input_fee <= MAX_MONEY.
         const int n_input_bytes{fuzzed_data_provider.ConsumeIntegralInRange<int>(1, 20'000)};
         const CAmount input_fee = coin_params.m_effective_feerate.GetFee(n_input_bytes);
-        // Ensure that each UTXO has at least an effective value of 1 sat
+        // Ensure that each UTXO has at least an effective value of 1 data
         const CAmount eff_value{fuzzed_data_provider.ConsumeIntegralInRange<CAmount>(1, MAX_MONEY + group_pos.size() - max_spendable - max_output_groups)};
         const CAmount amount{eff_value + input_fee};
         std::vector<COutput> temp_utxo_pool;

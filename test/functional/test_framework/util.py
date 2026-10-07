@@ -377,8 +377,8 @@ def random_bitflip(data):
 
 def get_fee(tx_size, feerate_dmd_kvb):
     """Calculate the fee in DMD given a feerate is DMD/kvB. Reflects CFeeRate::GetFee"""
-    feerate_sat_kvb = int(feerate_dmd_kvb * Decimal(1e8)) # Fee in sat/kvb as an int to avoid float precision errors
-    target_fee_sat = ceildiv(feerate_sat_kvb * tx_size, 1000) # Round calculated fee up to nearest sat
+    feerate_sat_kvb = int(feerate_dmd_kvb * Decimal(1e8)) # Fee in data/kvb as an int to avoid float precision errors
+    target_fee_sat = ceildiv(feerate_sat_kvb * tx_size, 1000) # Round calculated fee up to nearest data
     return target_fee_sat / Decimal(1e8) # Return result in  DMD
 
 

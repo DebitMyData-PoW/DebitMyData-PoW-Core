@@ -798,8 +798,8 @@ Firmar é posible unicamente con enderezos de tipo 'legacy'.</translation>
         <translation type="unfinished">(%1 bloqueado)</translation>
     </message>
     <message>
-        <source>Can vary +/- %1 satoshi(s) per input.</source>
-        <translation type="unfinished">Pode variar +/- %1 satoshi(s) por entrada.</translation>
+        <source>Can vary +/- %1 data per input.</source>
+        <translation type="unfinished">Pode variar +/- %1 debit(s) por entrada.</translation>
     </message>
     <message>
         <source>(no label)</source>

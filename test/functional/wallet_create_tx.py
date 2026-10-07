@@ -70,9 +70,9 @@ class CreateTxWalletTest(DebitMyDataTestFramework):
             )
 
         # Hit maxtxfee with explicit fee rate
-        self.log.info('Check maxtxfee in combination with explicit fee_rate=1000 sat/vB')
+        self.log.info('Check maxtxfee in combination with explicit fee_rate=1000 data/vB')
 
-        fee_rate_sats_per_vb = Decimal('0.01') * Decimal(1e8) / 1000  # Convert 0.01 DMD/kvB to sat/vB
+        fee_rate_sats_per_vb = Decimal('0.01') * Decimal(1e8) / 1000  # Convert 0.01 DMD/kvB to data/vB
 
         assert_raises_rpc_error(
             -6,
