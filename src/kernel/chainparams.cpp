@@ -181,11 +181,13 @@ public:
         consensus.BIP65Height = 0;
         consensus.BIP66Height = 0;
         consensus.CSVHeight = 0;
+        consensus.LWMAHeight = 120;
+        consensus.nSubsidyCycleLength = 9600000;
         consensus.SegwitHeight = 0;
         consensus.MinBIP9WarningHeight = 8064;
         consensus.powLimit = uint256{"00000fffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"};
-        consensus.nPowTargetTimespan = 2 * 60 * 60;
-        consensus.nPowTargetSpacing = 1 * 60;
+        consensus.nPowTargetTimespan = 20 * 60;
+        consensus.nPowTargetSpacing = 2.5 * 60;
         consensus.fPowAllowMinDifficultyBlocks = true;
         consensus.enforce_BIP94 = false;
         consensus.fPowNoRetargeting = false;
@@ -202,8 +204,8 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_TAPROOT].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
         consensus.vDeployments[Consensus::DEPLOYMENT_TAPROOT].min_activation_height = 0;
 
-        consensus.nMinimumChainWork = uint256{"0000000000000000000000000000000000000000000000000000000000100010"};
-        consensus.defaultAssumeValid = uint256{"000004afc467d57da7ec8281c38a153ef1443cf94f3dcbf915c819119dd26cfe"};
+        consensus.nMinimumChainWork = uint256{};
+        consensus.defaultAssumeValid = uint256{};
 
         pchMessageStart[0] = 0xb5;
         pchMessageStart[1] = 0x34;
@@ -219,15 +221,19 @@ public:
         assert(consensus.hashGenesisBlock == uint256{"000004afc467d57da7ec8281c38a153ef1443cf94f3dcbf915c819119dd26cfe"});
         assert(genesis.hashMerkleRoot == uint256{"282e01bbdf334e601d0ba1bebe9ea1534168846956ab5106f49398e22d3aec8e"});
 
+        // No mandatory block on this network: pin it to genesis, which every chain contains.
+        consensus.mandatory_block_height = 0;
+        consensus.mandatory_block_hash = consensus.hashGenesisBlock;
+
         vFixedSeeds.clear();
         vSeeds.clear();
         //vSeeds.emplace_back("xxxxxxxxxxxxxxx");
 
-        base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,111);
-        base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,196);
-        base58Prefixes[SECRET_KEY] =     std::vector<unsigned char>(1,239);
-        base58Prefixes[EXT_PUBLIC_KEY] = {0x04, 0x35, 0x87, 0xCF};
-        base58Prefixes[EXT_SECRET_KEY] = {0x04, 0x35, 0x83, 0x94};
+        base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,65);
+        base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,66);
+        base58Prefixes[SECRET_KEY] =     std::vector<unsigned char>(1,193);
+        base58Prefixes[EXT_PUBLIC_KEY] = {0xF3, 0x39, 0x47, 0x6C};
+        base58Prefixes[EXT_SECRET_KEY] = {0xF3, 0x39, 0x50, 0xEA};
 
         bech32_hrp = "td";
 
@@ -243,6 +249,12 @@ public:
             .nTime    = 1771620648,
             .tx_count = 0,
             .dTxRate  = 0.000,
+        };
+
+        // Same block spacing as mainnet, so mainnet's values are reused.
+        m_headers_sync_params = HeadersSyncParams{
+            .commitment_period = 235,
+            .redownload_buffer_size = 5549, // 5549/235 = ~23.6 commitments
         };
     }
 };
@@ -263,12 +275,12 @@ public:
         consensus.BIP66Height = 1;
         consensus.CSVHeight = 1;
         consensus.SegwitHeight = 1;
-        consensus.LWMAHeight = 136;
-        consensus.nSubsidyCycleLength = 42858;
+        consensus.LWMAHeight = 120;
+        consensus.nSubsidyCycleLength = 9600000;
         consensus.MinBIP9WarningHeight = 0;
         consensus.powLimit = uint256{"00000fffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"};
-        consensus.nPowTargetTimespan = 8 * 60;
-        consensus.nPowTargetSpacing = 1 * 60;
+        consensus.nPowTargetTimespan = 20 * 60;
+        consensus.nPowTargetSpacing = 2.5 * 60;
         consensus.fPowAllowMinDifficultyBlocks = true;
         consensus.enforce_BIP94 = false;
         consensus.fPowNoRetargeting = false;
@@ -286,8 +298,8 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_TAPROOT].nTimeout = Consensus::BIP9Deployment::NO_TIMEOUT;
         consensus.vDeployments[Consensus::DEPLOYMENT_TAPROOT].min_activation_height = 0;
 
-        consensus.nMinimumChainWork = uint256{"0000000000000000000000000000000000000000000000000000000000100010"};
-        consensus.defaultAssumeValid = uint256{"00000b934508e7221e665ce9d51a15fd60edb75a3c82f84e54eea61253e6696e"};
+        consensus.nMinimumChainWork = uint256{};
+        consensus.defaultAssumeValid = uint256{};
 
         pchMessageStart[0] = 0xb4;
         pchMessageStart[1] = 0xc0;
@@ -311,6 +323,10 @@ public:
         assert(consensus.hashGenesisBlock == uint256{"00000b934508e7221e665ce9d51a15fd60edb75a3c82f84e54eea61253e6696e"});
         assert(genesis.hashMerkleRoot == uint256{"dd750329e321590ba15016c298cca59e31c437bf1772e20d01e24b6e766d487e"});
 
+        // No mandatory block on this network: pin it to genesis, which every chain contains.
+        consensus.mandatory_block_height = 0;
+        consensus.mandatory_block_hash = consensus.hashGenesisBlock;
+
         vFixedSeeds.clear();
         vSeeds.clear();
         vSeeds.emplace_back("dnsseedtestnet4.debitmydata.network.");
@@ -318,9 +334,8 @@ public:
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,65);
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,66);
         base58Prefixes[SECRET_KEY] =     std::vector<unsigned char>(1,193);
-        base58Prefixes[EXT_PUBLIC_KEY] = {0x04, 0x5f, 0x1c, 0xf6};
-        base58Prefixes[EXT_SECRET_KEY] = {0x04, 0x5f, 0x18, 0xbc};
-
+        base58Prefixes[EXT_PUBLIC_KEY] = {0xF3, 0x39, 0x47, 0x6C};
+        base58Prefixes[EXT_SECRET_KEY] = {0xF3, 0x39, 0x50, 0xEA};
 
         bech32_hrp = "td";
 
@@ -330,6 +345,18 @@ public:
         m_is_mockable_chain = false;
 
         m_assumeutxo_data = {};
+
+        chainTxData = ChainTxData{
+            .nTime    = 1771620724,
+            .tx_count = 0,
+            .dTxRate  = 0.000,
+        };
+
+        // Same block spacing as mainnet, so mainnet's values are reused.
+        m_headers_sync_params = HeadersSyncParams{
+            .commitment_period = 235,
+            .redownload_buffer_size = 5549, // 5549/235 = ~23.6 commitments
+        };
     }
 };
 
@@ -345,33 +372,23 @@ public:
         vSeeds.clear();
 
         if (!options.challenge) {
-            bin = "512103ad5e0edad18cb1f0fc0d28a3d4f1f3e445640337489abb10404f2d1e086be430210359ef5021964fe22d6f8e05b2463c9540ce96883fe3b278760f048f5189f2e6c452ae"_hex_v_u8;
-            //vFixedSeeds = std::vector<uint8_t>(std::begin(chainparams_seed_signet), std::end(chainparams_seed_signet));
-            //vSeeds.emplace_back("xxxxxxxxxxxxxxxxxxx.");
-
-            //consensus.nMinimumChainWork = uint256{"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"};
-            //consensus.defaultAssumeValid = uint256{"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"};
-            m_assumed_blockchain_size = 20;
-            m_assumed_chain_state_size = 4;
-            chainTxData = ChainTxData{
-                // Data from RPC: getchaintxstats 0 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-                .nTime    = 0000000,
-                .tx_count = 0000000000,
-                .dTxRate  = 0.0000000000,
-            };
+            // Default DebitMyData Signet signing challenge (P2WPKH).
+            bin = "0014ee4fe655c7d2358351402c92cf44cdff2bd01db2"_hex_v_u8;
         } else {
             bin = *options.challenge;
-            consensus.nMinimumChainWork = uint256{};
-            consensus.defaultAssumeValid = uint256{};
-            m_assumed_blockchain_size = 0;
-            m_assumed_chain_state_size = 0;
-            chainTxData = ChainTxData{
-                0,
-                0,
-                0,
-            };
-            LogInfo("Signet with challenge %s", HexStr(bin));
         }
+
+        consensus.nMinimumChainWork = uint256{};
+        consensus.defaultAssumeValid = uint256{};
+        m_assumed_blockchain_size = 0;
+        m_assumed_chain_state_size = 0;
+        chainTxData = ChainTxData{
+            .nTime = 0,
+            .tx_count = 0,
+            .dTxRate = 0.0,
+        };
+
+        LogInfo("DMD Signet challenge: %s", HexStr(bin));
 
         if (options.seeds) {
             vSeeds = *options.seeds;
@@ -380,15 +397,17 @@ public:
         m_chain_type = ChainType::SIGNET;
         consensus.signet_blocks = true;
         consensus.signet_challenge.assign(bin.begin(), bin.end());
-        consensus.nSubsidyHalvingInterval = 210000;
+        consensus.nSubsidyHalvingInterval = 300000;
         consensus.BIP34Height = 1;
         consensus.BIP34Hash = uint256{};
         consensus.BIP65Height = 1;
         consensus.BIP66Height = 1;
+        consensus.LWMAHeight = 120;
+        consensus.nSubsidyCycleLength = 9600000;
         consensus.CSVHeight = 1;
         consensus.SegwitHeight = 1;
-        consensus.nPowTargetTimespan = 14 * 24 * 60 * 60;
-        consensus.nPowTargetSpacing = 10 * 60;
+        consensus.nPowTargetTimespan = 20 * 60;
+        consensus.nPowTargetSpacing = 2.5 * 60;
         consensus.fPowAllowMinDifficultyBlocks = false;
         consensus.enforce_BIP94 = false;
         consensus.fPowNoRetargeting = false;
@@ -418,29 +437,33 @@ public:
         nDefaultPort = 48556;
         nPruneAfterHeight = 1000;
 
-        genesis = CreateGenesisBlock(1598918400, 52613770, 0x1e0377ae, 1, 50 * COIN);
+        genesis = CreateGenesisBlock(1771620725, 13030394, 0x1e0377ae, 1, 35 * COIN);
         consensus.hashGenesisBlock = genesis.GetHash();
-        //assert(consensus.hashGenesisBlock == uint256{"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"});
-        //assert(genesis.hashMerkleRoot == uint256{"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"});
+        assert(consensus.hashGenesisBlock == uint256{"00000338a96872e719fb171d8897bf14f6703ec2a4698aef0d0a2b5b3b351619"});
+        assert(genesis.hashMerkleRoot == uint256{"282e01bbdf334e601d0ba1bebe9ea1534168846956ab5106f49398e22d3aec8e"});
+
+        // No mandatory block on this network: pin it to genesis, which every chain contains.
+        consensus.mandatory_block_height = 0;
+        consensus.mandatory_block_hash = consensus.hashGenesisBlock;
 
         m_assumeutxo_data = {};
 
-        base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,111);
-        base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,196);
-        base58Prefixes[SECRET_KEY] =     std::vector<unsigned char>(1,239);
-        base58Prefixes[EXT_PUBLIC_KEY] = {0x04, 0x35, 0x87, 0xCF};
-        base58Prefixes[EXT_SECRET_KEY] = {0x04, 0x35, 0x83, 0x94};
+        base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,65);
+        base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,66);
+        base58Prefixes[SECRET_KEY] =     std::vector<unsigned char>(1,193);
+        base58Prefixes[EXT_PUBLIC_KEY] = {0xF3, 0x39, 0x47, 0x6C};
+        base58Prefixes[EXT_SECRET_KEY] = {0xF3, 0x39, 0x50, 0xEA};
 
         bech32_hrp = "td";
 
         fDefaultConsistencyChecks = false;
         m_is_mockable_chain = false;
 
-        // Generated by headerssync-params.py on 2026-02-25.
-        //m_headers_sync_params = HeadersSyncParams{
-        //    .commitment_period = 620,
-        //    .redownload_buffer_size = 15724, // 15724/620 = ~25.4 commitments
-        //};
+        // Same block spacing as mainnet, so mainnet's values are reused.
+        m_headers_sync_params = HeadersSyncParams{
+            .commitment_period = 235,
+            .redownload_buffer_size = 5549, // 5549/235 = ~23.6 commitments
+        };
     }
 };
 
@@ -463,10 +486,12 @@ public:
         consensus.BIP66Height = 1;  // Always active unless overridden
         consensus.CSVHeight = 1;    // Always active unless overridden
         consensus.SegwitHeight = 0; // Always active unless overridden
+        consensus.LWMAHeight = 120; // Inactive while fPowNoRetargeting is true; set so the field is never read uninitialized.
+        consensus.nSubsidyCycleLength = 4800;
         consensus.MinBIP9WarningHeight = 0;
         consensus.powLimit = uint256{"7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"};
-        consensus.nPowTargetTimespan = 24 * 60 * 60;
-        consensus.nPowTargetSpacing = 10 * 60;
+        consensus.nPowTargetTimespan = 20 * 60;
+        consensus.nPowTargetSpacing = 2.5 * 60;
         consensus.fPowAllowMinDifficultyBlocks = true;
         consensus.enforce_BIP94 = opts.enforce_bip94;
         consensus.fPowNoRetargeting = true;
@@ -523,10 +548,14 @@ public:
             consensus.vDeployments[deployment_pos].min_activation_height = version_bits_params.min_activation_height;
         }
 
-        genesis = CreateGenesisBlock(1296688602, 2, 0x207fffff, 1, 50 * COIN);
+        genesis = CreateGenesisBlock(1771620726, 1, 0x207fffff, 1, 35 * COIN);
         consensus.hashGenesisBlock = genesis.GetHash();
-        //assert(consensus.hashGenesisBlock == uint256{"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"});
-        //assert(genesis.hashMerkleRoot == uint256{"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"});
+        assert(consensus.hashGenesisBlock == uint256{"0b900da7de6aec2907cab40e63d39a5bd59f0f4f19ff22f637fef3e82876da61"});
+        assert(genesis.hashMerkleRoot == uint256{"282e01bbdf334e601d0ba1bebe9ea1534168846956ab5106f49398e22d3aec8e"});
+
+        // No mandatory block on this network: pin it to genesis, which every chain contains.
+        consensus.mandatory_block_height = 0;
+        consensus.mandatory_block_hash = consensus.hashGenesisBlock;
 
         vFixedSeeds.clear(); //!< Regtest mode doesn't have any fixed seeds.
         vSeeds.clear();
@@ -543,19 +572,19 @@ public:
             .dTxRate = 0.001, // Set a non-zero rate to make it testable
         };
 
-        base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,111);
-        base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,196);
-        base58Prefixes[SECRET_KEY] =     std::vector<unsigned char>(1,239);
-        base58Prefixes[EXT_PUBLIC_KEY] = {0x04, 0x35, 0x87, 0xCF};
-        base58Prefixes[EXT_SECRET_KEY] = {0x04, 0x35, 0x83, 0x94};
+        base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,65);
+        base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,66);
+        base58Prefixes[SECRET_KEY] =     std::vector<unsigned char>(1,193);
+        base58Prefixes[EXT_PUBLIC_KEY] = {0xF3, 0x39, 0x47, 0x6C};
+        base58Prefixes[EXT_SECRET_KEY] = {0xF3, 0x39, 0x50, 0xEA};
 
         bech32_hrp = "dmrt";
 
-        // Copied from Testnet4.
-        //m_headers_sync_params = HeadersSyncParams{
-        //    .commitment_period = 275,
-        //    .redownload_buffer_size = 7017, // 7017/275 = ~25.5 commitments
-        //};
+        // Same block spacing as mainnet, so mainnet's values are reused.
+        m_headers_sync_params = HeadersSyncParams{
+            .commitment_period = 235,
+            .redownload_buffer_size = 5549, // 5549/235 = ~23.6 commitments
+        };
     }
 };
 

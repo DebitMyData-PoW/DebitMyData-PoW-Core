@@ -16,17 +16,27 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
     assert(pindexLast != nullptr);
     unsigned int nProofOfWorkLimit = UintToArith256(params.powLimit).GetCompact();
 
+    // Regtest: maintain fixed difficulty, including after LWMA activation.
+    if (params.fPowNoRetargeting) {
+        return pindexLast->nBits;
+    }
+
+    // LWMA difficulty adjustment.
     if (static_cast<uint32_t>(pindexLast->nHeight + 1) >= params.LWMAHeight) {
+        // Testnet: permit minimum difficulty after a long block interval.
+        if (params.fPowAllowMinDifficultyBlocks &&
+            pblock->GetBlockTime() > pindexLast->GetBlockTime() + params.nPowTargetSpacing * 2) {
+            return nProofOfWorkLimit;
+        }
         return LwmaCalculateNextWorkRequired(pindexLast, params);
     } else {
-
       // Only change once per difficulty adjustment interval
       if ((pindexLast->nHeight+1) % params.DifficultyAdjustmentInterval() != 0)
       {
           if (params.fPowAllowMinDifficultyBlocks)
           {
               // Special difficulty rule for testnet:
-              // If the new block's timestamp is more than 2* 10 minutes
+              // If the new block's timestamp exceeds twice the target spacing,
               // then it MUST be a min-difficulty block.
               if (pblock->GetBlockTime() > pindexLast->GetBlockTime() + params.nPowTargetSpacing*2)
                   return nProofOfWorkLimit;
@@ -42,7 +52,7 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
           return pindexLast->nBits;
       }
 
-      // Go back by what we want to be 14 days worth of blocks
+      // Go back one legacy difficulty adjustment interval.
       int nHeightFirst = pindexLast->nHeight - (params.DifficultyAdjustmentInterval()-1);
       assert(nHeightFirst >= 0);
       const CBlockIndex* pindexFirst = pindexLast->GetAncestor(nHeightFirst);
@@ -86,7 +96,48 @@ unsigned int LwmaCalculateNextWorkRequired(const CBlockIndex* pindexLast, const 
          }
     }
 
-    // Loop through N most recent blocks. 
+    // Testnet only (fPowAllowMinDifficultyBlocks): a block mined under the
+    // min-difficulty rule carries powLimit in nBits, which says nothing about
+    // the network's hashrate. Averaging it in would make the following blocks
+    // far easier, so the most recent normal target is used in its place.
+    // If no normal block exists within N_full blocks before the window, the
+    // network has been running on min-difficulty blocks for a long time and
+    // powLimit is used as the reference.
+    const bool skipMinDifficultyBlocks = params.fPowAllowMinDifficultyBlocks;
+    const unsigned int nPowLimitCompact = powLimit.GetCompact();
+    const auto isMinDifficultyBlock = [&](const CBlockIndex* pindex) {
+        if (!pindex->pprev ||
+            pindex->nBits != nPowLimitCompact ||
+            pindex->GetBlockTime() <= pindex->pprev->GetBlockTime() + T * 2) {
+            return false;
+        }
+        // Before LWMA, the legacy rule never applies min difficulty at a retarget block.
+        return static_cast<int64_t>(pindex->nHeight) >= static_cast<int64_t>(params.LWMAHeight) ||
+               pindex->nHeight % params.DifficultyAdjustmentInterval() != 0;
+    };
+
+    if (skipMinDifficultyBlocks && pindexTransition && isMinDifficultyBlock(pindexTransition)) {
+        const CBlockIndex* pindex = pindexTransition->pprev;
+        while (pindex && isMinDifficultyBlock(pindex)) {
+            pindex = pindex->pprev;
+        }
+        if (pindex) {
+            transitionTarget.SetCompact(pindex->nBits);
+        }
+    }
+
+    arith_uint256 lastNormalTarget = powLimit;
+    if (skipMinDifficultyBlocks) {
+        const CBlockIndex* pindex = blockPreviousTimestamp;
+        for (int64_t steps = 0; pindex != nullptr && steps < N_full; ++steps, pindex = pindex->pprev) {
+            if (!isMinDifficultyBlock(pindex)) {
+                lastNormalTarget.SetCompact(pindex->nBits);
+                break;
+            }
+        }
+    }
+
+    // Loop through N most recent blocks.
     for (int64_t i = height - N + 1; i <= height; i++) {
         const CBlockIndex* block = pindexLast->GetAncestor(i);
         thisTimestamp = std::max<int64_t>(block->GetBlockTime(), previousTimestamp + 1);
@@ -101,8 +152,18 @@ unsigned int LwmaCalculateNextWorkRequired(const CBlockIndex* pindexLast, const 
 
         if (i < params.LWMAHeight && pindexTransition != nullptr) {
             target = transitionTarget;
+            if (skipMinDifficultyBlocks) {
+                lastNormalTarget = transitionTarget;
+            }
         } else {
             target.SetCompact(block->nBits);
+            if (skipMinDifficultyBlocks) {
+                if (isMinDifficultyBlock(block)) {
+                    target = lastNormalTarget;
+                } else {
+                    lastNormalTarget = target;
+                }
+            }
         }
 
         //sumTarget += target / N;
